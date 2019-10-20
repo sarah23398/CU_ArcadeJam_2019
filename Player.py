@@ -1,4 +1,5 @@
 import pygame
+import os
 pygame.init()
 vec = pygame.math.Vector2
 
@@ -42,12 +43,12 @@ class Player(pygame.sprite.Sprite):
 
     def load_images(self):
         self.walkRight = [
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r1.png'),
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r2.png'),
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r3.png'),
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r4.png'),
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r5.png'),
-            pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/r6.png')]
+            pygame.image.load(os.path.join(os.path.dirname(__file__),'resources/images/sprites/r1.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/r2.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/r3.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/r4.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/r5.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/r6.png'))]
         self.walkRight = [pygame.transform.scale(self.walkRight[0], (playerHeight, playerWidth)),
                      pygame.transform.scale(self.walkRight[1], (playerHeight, playerWidth)),
                      pygame.transform.scale(self.walkRight[2], (playerHeight, playerWidth)),
@@ -55,12 +56,14 @@ class Player(pygame.sprite.Sprite):
                      pygame.transform.scale(self.walkRight[4], (playerHeight, playerWidth)),
                      pygame.transform.scale(self.walkRight[5], (playerHeight, playerWidth))]
 
-        self.walkLeft = [pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l1.png'),
-                    pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l2.png'),
-                    pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l3.png'),
-                    pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l4.png'),
-                    pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l5.png'),
-                    pygame.image.load('C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/l6.png')]
+        self.walkLeft = [
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l1.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l2.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l3.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l4.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l5.png')),
+            pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/l6.png'))]
+
         self.walkLeft = [pygame.transform.scale(self.walkLeft[0], (playerHeight, playerWidth)),
                     pygame.transform.scale(self.walkLeft[1], (playerHeight, playerWidth)),
                     pygame.transform.scale(self.walkLeft[2], (playerHeight, playerWidth)),
@@ -68,24 +71,19 @@ class Player(pygame.sprite.Sprite):
                     pygame.transform.scale(self.walkLeft[4], (playerHeight, playerWidth)),
                     pygame.transform.scale(self.walkLeft[5], (playerHeight, playerWidth))]
 
-        self.standRight = pygame.image.load(
-            'C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/standr.png')
+        self.standRight = pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/standr.png'))
         self.standRight = pygame.transform.scale(self.standRight, (playerHeight, playerWidth))
 
-        self.standLeft = pygame.image.load(
-            'C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/standl.png')
+        self.standLeft = pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/standl.png'))
         self.standLeft = pygame.transform.scale(self.standLeft, (playerHeight, playerWidth))
 
-        self.jumpRight = pygame.image.load(
-            'C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/jumpr.png')
+        self.jumpRight = pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/jumpr.png'))
         self.jumpRight = pygame.transform.scale(self.jumpRight, (playerHeight, playerWidth))
 
-        self.jumpLeft = pygame.image.load(
-            'C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/jumpl.png')
+        self.jumpLeft = pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/jumpl.png'))
         self.jumpLeft = pygame.transform.scale(self.jumpLeft, (playerHeight, playerWidth))
 
-        self.standStill = pygame.image.load(
-            'C:/Users/Gahen/Desktop/arcade_game/arcade_game/resources/images/sprites/still.png')
+        self.standStill = pygame.image.load(os.path.join(os.path.dirname(__file__), 'resources/images/sprites/still.png'))
         self.standStill = pygame.transform.scale(self.standStill, (playerHeight, playerWidth))
 
     def update(self):
@@ -169,13 +167,3 @@ class Player(pygame.sprite.Sprite):
             screen.blit(self.standRight, (self.pos.x, self.pos.y))
         else:
             screen.blit(self.standLeft, (self.pos.x, self.pos.y))
-
-
-class Platform(pygame.sprite.Sprite):
-    def __init__(self, x, y, w, h):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((w, h))
-        self.image.fill((0, 255, 0))
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
