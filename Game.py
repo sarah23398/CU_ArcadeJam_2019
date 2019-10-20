@@ -1,6 +1,6 @@
 import pygame
 import os
-from Player import Player
+from Player import *
 from pygame.locals import *
 
 # Define some colors
@@ -9,6 +9,10 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 LIGHT = (0xF2, 0xF0, 0xAF)
 
+PLATFORM_LIST = [(0, 720 - 300, 1280, 40)]
+
+windowHeight = 114
+windowWidth = 114
 
 class Game:
     # Represents a full Game.
@@ -24,14 +28,14 @@ class Game:
         pygame.display.set_caption(self.caption)
         # Initialize background
         self.background_image = pygame.image.load(os.path.join(os.path.dirname(__file__),
-                                                               "Assets/background1.png")).convert()
+                                                               "resources/images/background1.png")).convert()
         self.background_image = pygame.transform.scale(self.background_image, (1280, 720))
         # Initialize windows
-        self.window1 = Rect(318, 515, 114, 114)
-        self.window2 = Rect(848, 515, 114, 114)
+        self.window1 = Rect(318, 515, windowHeight, windowWidth)
+        self.window2 = Rect(848, 515, windowHeight, windowWidth)
         # Initialize light surface
         self.orig_light = pygame.image.load(os.path.join(os.path.dirname(__file__),
-                                                               "Assets/light2.png")).convert_alpha()
+                                                               "resources/images/light2.png")).convert_alpha()
         self.orig_light = pygame.transform.scale(self.orig_light, (2560, 1440))
         self.orig_light.set_alpha(128)
         self.light_rotation = 0
@@ -43,9 +47,7 @@ class Game:
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
         # Create Player controller
-        self.x_change = 20
-        self.y_change = 20
-        self.player = Player(self.x_change, self.y_change)
+        self.player = Player(self)
         # Display score
         self.font = pygame.font.SysFont('Calibri', 25, True, False)
         self.text = self.font.render("Score: " + str(self.score), True, BLACK)
@@ -59,59 +61,71 @@ class Game:
         pygame.draw.rect(self.screen, WHITE, self.window2)
         self.screen.blit(light, [-1280, -720])
         self.screen.blit(self.text, [1100, 650])
+        self.player.draw(self.screen)
         pygame.display.update()
 
-    def start(self):
-        # --- Start Game ---
-        # Loop until the user clicks the close button.
+    def new(self):
+        # start a new game
+        self.all_sprites = pygame.sprite.Group()
+        self.platforms = pygame.sprite.Group()
+        self.all_sprites.add(self.player)
+        for plat in PLATFORM_LIST:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+        self.run()
 
-        # -------- Main Program Loop -----------
-        while not self.done:
-            # --- Main event loop
-            self.move_light()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.done = True
+    def run(self):
+        # Game Loop
+        self.playing = True
+        while self.playing:
+            self.clock.tick(60)
+            self.events()
+            self.update()
+            self.draw(self.orig_light)
 
-                # --- Game logic should go here
-                # User pressed down on a key
-                elif event.type == pygame.KEYDOWN:
-                    # Figure out if it was an arrow key. If so
-                    # adjust coord.
-                    if event.key == pygame.K_a:
-                        self.player.move_left()
-                    elif event.key == pygame.K_d:
-                        self.player.move_right()
-                    elif event.key == pygame.K_w:
-                        self.player.move_up()
-                        self.move_screen_up()
+    def update(self):
+        # Game Loop - Update
+        self.all_sprites.update()
+        # check if player hits a platform - only if falling
+        if self.player.vel.y > 0:
+            hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
+            if hits:
+                self.player.pos.y = hits[0].rect.top
+                self.player.vel.y = 0
 
-                    elif event.key == pygame.K_7:
-                        self.player.sneak()
+    def events(self):
+        # Game Loop - events
+        for event in pygame.event.get():
+            # check for closing window
+            if event.type == pygame.QUIT:
+                if self.playing:
+                    self.playing = False
+                self.done = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:
+                    self.move_screen_up()
+                    self.player.jump()
 
-            # --- Drawing code should go here
-            # Move light
-
-            # Update score
-            # score = self.calculate_score()
-
-            # --- Go ahead and update the screen with what we've drawn.
-            pygame.display.flip()
-
-            # --- Limit to 60 frames per second
-            self.clock.tick(10)
 
     # def calculate_score(self):
+    def show_start_screen(self):
+        # game splash/start screen
+        pass
+
+    def show_go_screen(self):
+        # game over/continue
+        pass
 
     def move_screen_up(self):
         # Move windows up
-        self.window1.top -= self.y_change
-        self.window2.top -= self.y_change
-        self.draw()
+        self.window1.top -= 20
+        self.window2.top -= 20
+        # self.draw()
 
     def move_screen_down(self):
         # Move windows down
-        self.window1.top += self.player.y_change
+        self.window1.top += self.player.d
         self.window2.top += self.player.y_change
         pygame.draw.rect(self.screen, WHITE, self.window1)
         pygame.draw.rect(self.screen, WHITE, self.window2)
@@ -137,3 +151,10 @@ class Game:
         # Close the window and quit.
         pygame.quit()
 
+g = Game()
+g.show_start_screen()
+while not g.done:
+    g.new()
+    g.show_go_screen()
+
+g.quit()
